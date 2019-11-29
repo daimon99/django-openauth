@@ -3,7 +3,10 @@
 help:           ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
-release: ## 更新服务
+clean:
+	rm dist/*
+
+release: clean  ## 更新服务
 	python setup.py sdist
 	twine upload dist/*
 
