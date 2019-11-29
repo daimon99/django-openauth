@@ -33,8 +33,7 @@ def get_jwt_secret():
         return 'nicainicainicaicaicai'
 
 
-def get_qywx_user(provider, uid):
-    username = f'{provider}-{uid}'
+def create_user(username):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
@@ -42,12 +41,19 @@ def get_qywx_user(provider, uid):
     if not user.is_staff:
         user.is_staff = True
         user.save()
+    return user
+
+
+def get_qywx_user(provider, uid):
+    username = f'{provider}-{uid}'
     try:
         account = Account.objects.get(provider=provider, uid=uid)
         if account.user is None:
+            user = create_user(username)
             account.user = user
             account.save()
     except Account.DoesNotExist:
+        user = create_user(username)
         Account.objects.create(
             user=user,
             provider=provider,
