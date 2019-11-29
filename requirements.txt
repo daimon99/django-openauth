@@ -1,2 +1,2 @@
-django-redisdjango-redis
+django-redis
 pyjwt

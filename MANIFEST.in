@@ -1,6 +1,6 @@
 include LICENSE
 include README.rst
-recursive-include uniauth/static *
-recursive-include uniauth/templates *
+recursive-include openauth/static *
+recursive-include openauth/templates *
 recursive-include docs *
 

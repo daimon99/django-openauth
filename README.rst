@@ -1,8 +1,8 @@
-=======
-Uniauth
-=======
+==========
+Openauth
+==========
 
-Uniauth 是 统一认证平台的 django 插件。
+Openauth 是 统一认证平台的 django 插件。
 
 通过这个插件，django 可以与 统一认证平台 集成起来，直接具备如 企业微信 登录能力。
 
@@ -12,22 +12,22 @@ Uniauth 是 统一认证平台的 django 插件。
 其中统一认证平台可以自己搭建。
 
 Quick start
-------------
+--------------
 
 1. 安装 ::
 
-    pip install django-uniauth
+    pip install django-openauth
 
 2. 在 settings 加入 uniauth ::
 
     INSTALLED_APPS = [
         ...
-        'uniauth',
+        'openauth',
     ]
 
-3. 在 urls.py 加入 uniauth ::
+3. 在 urls.py 加入 openauth ::
 
-    path('uniauth/', include('uniauth.urls')),
+    path('openauth/', include('openauth.urls')),
 
 4. 同步数据库 ::
 
@@ -36,29 +36,29 @@ Quick start
 5. 访问 http://localhost:8000/admin 看效果
 
 配置项
---------
+----------
 
-1. settings 支持以下配置项
+* settings 支持以下配置项:
 
-    * UNIAUTH_JWT_SECRET：如果该配置项有值，或值不为空字符串，则 jwt 的认证 secret 从该项获取.
-    这时不需要 redis。若该配置项为空，则 uniauth 会从 Redis 中的 jwt_secret 中获取 secret
+  * OPENAUTH_JWT_SECRET：如果该配置项有值，或值不为空字符串，则 jwt 的认证 secret 从该项获取。
+    这时不需要 redis。若该配置项为空，则 openauth 会从 Redis 中的 jwt_secret 中获取 secret
 
-2. 如果 jwt secret 从 redis 中获取，请在 settings 的 cache 中这么配置::
+* 如果 jwt secret 从 redis 中获取，请在 settings 的 cache 中这么配置::
 
      CACHES = {
         'default': {
             ...
         },
-        'uniauth': {
+        'openauth': {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": f"redis://{config.uniauth_redis_host}:{config.uniauth_redis_port}/{config.uniauth_redis_db}",
+            "LOCATION": f"redis://{config.openauth_redis_host}:{config.openauth_redis_port}/{config.openauth_redis_db}",
             'KEY_PREFIX': '',
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "PASSWORD": f"{config.uniauth_redis_password}"
+                "PASSWORD": f"{config.openauth_redis_password}"
             }
         }
-    }
+     }
 
 
 

@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 # Create your views here.
+from django.urls import resolve
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.cache import never_cache
@@ -13,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_redis import get_redis_connection
 
-from uniauth.models import Account
+from openauth.models import Account
 from . import settings
 
 User = get_user_model()
@@ -22,10 +23,10 @@ log = logging.getLogger(__name__)
 
 
 def get_jwt_secret():
-    if settings.UNIAUTH_JWT_SECRET:
-        return settings.UNIAUTH_JWT_SECRET
+    if settings.OPENAUTH_JWT_SECRET:
+        return settings.OPENAUTH_JWT_SECRET
     else:
-        conn = get_redis_connection("uniauth")
+        conn = get_redis_connection("openauth")
         secret = conn.get('jwt_secret')
         if secret:
             return secret
@@ -33,23 +34,35 @@ def get_jwt_secret():
 
 
 def get_qywx_user(provider, uid):
+    username = f'{provider}-{uid}'
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User.objects.create_user(username, is_staff=True)
+    if not user.is_staff:
+        user.is_staff = True
+        user.save()
     try:
         account = Account.objects.get(provider=provider, uid=uid)
-        return account.user
+        if account.user is None:
+            account.user = user
+            account.save()
     except Account.DoesNotExist:
-        username = f'{provider}-{uid}'
-        user = User.objects.create_user(username)
         Account.objects.create(
             user=user,
             provider=provider,
             uid=uid,
             created=now()
         )
-        return user
+    return user
 
 
-class UniAuthView(LoginView):
+class OpenAuthView(LoginView):
     redirect_authenticated_user = True
+
+    def get(self, request, *args, **kwargs):
+
+        return self.render_to_response(self.get_context_data())
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(csrf_protect)
@@ -72,6 +85,9 @@ class UniAuthView(LoginView):
             except Exception as e:
                 log.warning('jwt 解析异常: %s', e)
 
+        redirect_to = self.get_success_url()
+        view = resolve(redirect_to)
+
         if self.redirect_authenticated_user and self.request.user.is_authenticated:
             redirect_to = self.get_success_url()
             if redirect_to == self.request.path:
@@ -90,4 +106,4 @@ class UniAuthView(LoginView):
         return context
 
 
-verify_uniauth = UniAuthView.as_view()
+verify_uniauth = OpenAuthView.as_view()
