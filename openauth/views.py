@@ -48,7 +48,8 @@ def get_qywx_user(provider, uid):
     username = f'{provider}-{uid}'
     try:
         account = Account.objects.get(provider=provider, uid=uid)
-        if account.user is None:
+        user = account.user
+        if user is None:
             user = create_user(username)
             account.user = user
             account.save()
