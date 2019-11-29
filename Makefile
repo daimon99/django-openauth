@@ -5,7 +5,7 @@ help:           ## Show this help.
 
 clean:
 	- rm -rf dist
-	- rm django_openauth.egg-info
+	- rm -rf django_openauth.egg-info
 
 release: clean  ## 更新服务
 	python setup.py sdist
