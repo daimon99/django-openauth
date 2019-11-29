@@ -1,0 +1,2 @@
+django-redisdjango-redis
+pyjwt
