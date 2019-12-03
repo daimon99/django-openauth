@@ -26,10 +26,13 @@ def get_jwt_secret():
     if settings.OPENAUTH_JWT_SECRET:
         return settings.OPENAUTH_JWT_SECRET
     else:
-        conn = get_redis_connection("openauth")
-        secret = conn.get('jwt_secret')
-        if secret:
-            return secret
+        try:
+            conn = get_redis_connection("openauth")
+            secret = conn.get('jwt_secret')
+            if secret:
+                return secret
+        except:
+            pass
         return 'nicainicainicaicaicai'
 
 
