@@ -96,7 +96,7 @@ class OpenAuthView(LoginView):
                 log.warning('jwt 解析异常: %s', e)
 
         redirect_to = self.get_success_url()
-        view = resolve(redirect_to)
+        # view = resolve(redirect_to)
 
         if self.redirect_authenticated_user and self.request.user.is_authenticated:
             redirect_to = self.get_success_url()
