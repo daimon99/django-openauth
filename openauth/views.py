@@ -25,18 +25,18 @@ log = logging.getLogger(__name__)
 def get_jwt_secret():
     openauth_jwt_secret = cache.get('OPENAUTH_JWT_SECRET')
     if not openauth_jwt_secret:
-        if settings.OPENAUTH_JWT_SECRET:
-            openauth_jwt_secret = settings.OPENAUTH_JWT_SECRET
-        else:
-            try:
+        try:
+            if settings.OPENAUTH_JWT_SECRET:
+                openauth_jwt_secret = settings.OPENAUTH_JWT_SECRET
+            else:
                 conn = get_redis_connection("openauth")
                 secret = conn.get('jwt_secret')
                 if secret:
                     openauth_jwt_secret = secret
                 else:
                     openauth_jwt_secret = 'nicainicainicaicaicai'
-            except:
-                openauth_jwt_secret = 'nicainicainicaicaicai'
+        except:
+            openauth_jwt_secret = 'nicainicainicaicaicai'
         cache.set('OPENAUTH_JWT_SECRET', openauth_jwt_secret, timeout=300)
     return openauth_jwt_secret
 
