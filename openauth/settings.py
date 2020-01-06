@@ -3,7 +3,7 @@ from django.conf import settings
 
 # The jwt secret key。If this key not set or set with '',
 # OPENauth will get the key from redis
-OPENAUTH_JWT_SECRET = getattr(settings, 'OPENAUTH_JWT_SECRET', '')
+OPENAUTH_JWT_SECRET = getattr(settings, 'OPENAUTH_JWT_SECRET', 'nicainicainicaicaicai')
 # 企业微信统一认证平台的url，注意这个 url 在使用中，会再增加跳转地址
 QYWX_LOGIN_URL = getattr(
     settings, 'QYWX_LOGIN_URL',
