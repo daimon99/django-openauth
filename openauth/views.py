@@ -4,9 +4,9 @@ import jwt
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import LoginView
+from django.core.cache import cache
 from django.http import HttpResponseRedirect
 # Create your views here.
-from django.urls import resolve
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.cache import never_cache
@@ -23,17 +23,22 @@ log = logging.getLogger(__name__)
 
 
 def get_jwt_secret():
-    if settings.OPENAUTH_JWT_SECRET:
-        return settings.OPENAUTH_JWT_SECRET
-    else:
-        try:
-            conn = get_redis_connection("openauth")
-            secret = conn.get('jwt_secret')
-            if secret:
-                return secret
-        except:
-            pass
-        return 'nicainicainicaicaicai'
+    openauth_jwt_secret = cache.get('OPENAUTH_JWT_SECRET')
+    if not openauth_jwt_secret:
+        if settings.OPENAUTH_JWT_SECRET:
+            openauth_jwt_secret = settings.OPENAUTH_JWT_SECRET
+        else:
+            try:
+                conn = get_redis_connection("openauth")
+                secret = conn.get('jwt_secret')
+                if secret:
+                    openauth_jwt_secret = secret
+                else:
+                    openauth_jwt_secret = 'nicainicainicaicaicai'
+            except:
+                openauth_jwt_secret = 'nicainicainicaicaicai'
+        cache.set('OPENAUTH_JWT_SECRET', openauth_jwt_secret, timeout=300)
+    return openauth_jwt_secret
 
 
 def create_user(username):
